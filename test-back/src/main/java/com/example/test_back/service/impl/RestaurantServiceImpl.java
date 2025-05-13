@@ -50,14 +50,13 @@ public class RestaurantServiceImpl implements RestaurantService {
         Restaurant restaurant = restaurantRepository.findById(restaurantId)
                 .orElseThrow(() -> new EntityNotFoundException(ResponseMessage.NOT_EXIST_RESTAURANT+restaurantId));
 
-        List<RestaurantResponseDto> restaurants = PostRestaurantResponseDto.
-
         responseDto = new RestaurantResponseDto(
                 restaurant.getId(),
                 restaurant.getName(),
                 restaurant.getAddress(),
                 restaurant.getPhoneNumber()
         );
+
         return responseDto;
     }
 
@@ -96,18 +95,16 @@ public class RestaurantServiceImpl implements RestaurantService {
                 .id(updateRestaurant.getId())
                 .name(updateRestaurant.getName())
                 .address(updateRestaurant.getAddress())
-                .phoneNumber(updateRestaurant.getPhoneNumber().stream)
-                .build()
+                .phoneNumber(updateRestaurant.getPhoneNumber())
+                .build();
 
-
-
-        return null;
+        return responseDto;
     }
 
     //레스토랑 삭제
     @Override
     @Transactional
-    public void deleteRestaurant(Long restaurantId) {
+    public RestaurantResponseDto deleteRestaurant(Long restaurantId) {
         if(!restaurantRepository.existsById(restaurantId)){
             throw new EntityNotFoundException(ResponseMessage.NOT_EXIST_RESTAURANT+restaurantId);
         }
@@ -117,5 +114,6 @@ public class RestaurantServiceImpl implements RestaurantService {
 
         restaurant.getMenus().forEach(restaurant::removeMenu);
         restaurantRepository.deleteById(restaurantId);
+        return null;
     }
 }

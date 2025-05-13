@@ -53,6 +53,7 @@ public class MenuServiceImpl implements MenuService {
         return null;
     }
 
+    //메뉴 전체조회
     @Override
     public ResponseEntity<List<MenuResponseDto>> getAllMenus(Long restaurantId) {
         List<MenuResponseDto> responseDtos = null;
