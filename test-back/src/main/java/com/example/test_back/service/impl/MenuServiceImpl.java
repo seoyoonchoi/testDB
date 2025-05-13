@@ -10,13 +10,11 @@ import com.example.test_back.repository.MenuRepository;
 import com.example.test_back.repository.RestaurantRepository;
 import com.example.test_back.service.MenuService;
 import jakarta.persistence.EntityNotFoundException;
-import jakarta.persistence.Id;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -71,11 +69,37 @@ public class MenuServiceImpl implements MenuService {
 
     @Override
     public MenuResponseDto updateMenu(Long restaurantId, Long menuId, PostMenuRequestDto dto) {
-        return null;
+        MenuResponseDto responseDto = null;
+        Menu menu = menuRepository.findById(menuId)
+                .orElseThrow(() -> new EntityNotFoundException(ResponseMessage.NOT_EXIST_MENU + menuId));
+
+        if(!menu.getRestaurant().getId().equals(restaurantId)){
+            throw new IllegalArgumentException("Menu does not belong to the specified Restaurant");
+        }
+
+        menu.setName(dto.getName());
+        Menu updatedMenu = menuRepository.save(menu);
+
+        responseDto = MenuResponseDto.builder()
+                .id(updatedMenu.getId())
+                .name(updatedMenu.getName())
+                .price(updatedMenu.getPrice())
+                .description(updatedMenu.getDescription())
+                .build();
+
+        return responseDto;
     }
 
     @Override
     public void deleteMenu(Long restaurantId, Long menuId) {
+        Menu menu = menuRepository.findById(menuId)
+                .orElseThrow(() -> new EntityNotFoundException(ResponseMessage.NOT_EXIST_MENU+menuId));
 
+        if(!menu.getRestaurant().getId().equals(restaurantId)){
+            throw new IllegalArgumentException("menu does not belont to the restaurant");
+        }
+
+        menu.getRestaurant().removeMenu(menu);
+        menuRepository.delete(menu);
     }
 }

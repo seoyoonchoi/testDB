@@ -42,13 +42,15 @@ public class RestaurantServiceImpl implements RestaurantService {
         return responseDto;
     }
 
-    //전체조회
+    //단건조회
     @Override
     @Transactional(readOnly = true)
     public RestaurantResponseDto getRestaurantById(Long restaurantId) {
         RestaurantResponseDto responseDto = null;
         Restaurant restaurant = restaurantRepository.findById(restaurantId)
                 .orElseThrow(() -> new EntityNotFoundException(ResponseMessage.NOT_EXIST_RESTAURANT+restaurantId));
+
+        List<RestaurantResponseDto> restaurants = PostRestaurantResponseDto.
 
         responseDto = new RestaurantResponseDto(
                 restaurant.getId(),
@@ -59,7 +61,7 @@ public class RestaurantServiceImpl implements RestaurantService {
         return responseDto;
     }
 
-    //단건조회
+    //전체조회
     @Override
     @Transactional(readOnly = true)
     public List<RestaurantResponseDto> getAllRestaurants() {
@@ -105,18 +107,15 @@ public class RestaurantServiceImpl implements RestaurantService {
     //레스토랑 삭제
     @Override
     @Transactional
-    public RestaurantResponseDto<Void> deleteRestaurant(Long restaurantId) {
+    public void deleteRestaurant(Long restaurantId) {
         if(!restaurantRepository.existsById(restaurantId)){
             throw new EntityNotFoundException(ResponseMessage.NOT_EXIST_RESTAURANT+restaurantId);
         }
 
         Restaurant restaurant = restaurantRepository.findById(restaurantId)
-                .orElseThrow(() -> new EntityNotFoundException(ResponseMessage.NOT_EXIST_RESTAURANT+restaurantId));
+                .orElseThrow(() -> new EntityNotFoundException(ResponseMessage.NOT_EXIST_MENU+restaurantId));
 
         restaurant.getMenus().forEach(restaurant::removeMenu);
         restaurantRepository.deleteById(restaurantId);
-        return null;
-
-
     }
 }
